@@ -1,5 +1,5 @@
 # LedScreenProjectSEVRI
-a project with SEVRI, to diplay smileys on a LED display.
+*a project with SEVRI, to diplay smileys on a LED display.*
 
 The project was in majority made by Michael VO, for SEVRI. We use a Raspberry Pie, with AdaFruit to link the raspberry to a LED Display.
 
@@ -10,6 +10,13 @@ The raspberry is link to an automaton that gives in real time how is the product
 
 We used an existing project to use the LED matrix, downloaded from https://github.com/hzeller/rpi-rgb-led-matrix.git (last download: 03/07/2020 - SHA 6668ff8b55fcfe5ea36cf22aa48155c9ced177a9).
 We created the file code_leds.cpp and the images corresponding to the smileys.
+
+
+## To run the program
+
+To compile the project: 
+>cd rpi-rgb-led-matrix/  
+>make -C examples-api-use
 
 
 
