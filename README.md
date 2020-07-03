@@ -8,7 +8,8 @@ The raspberry is link to an automaton that gives in real time how is the product
 
 ## about the implementation
 
-We used an existing project to use the LED matrix. We create the file code_leds.cpp and the images corresponding to the smileys.
+We used an existing project to use the LED matrix, downloaded from https://github.com/hzeller/rpi-rgb-led-matrix.git (last download: 03/07/2020 - SHA 6668ff8b55fcfe5ea36cf22aa48155c9ced177a9).
+We created the file code_leds.cpp and the images corresponding to the smileys.
 
 
 
