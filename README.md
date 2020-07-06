@@ -1,5 +1,6 @@
 # LedScreenProjectSEVRI
 *a project with SEVRI, to diplay smileys on a LED display.*
+** PLEASE, BE AWARE THAT THIS REPO IS IN PROGRESS. It doesn't work yet. Thanks **
 
 The project was in majority made withe an huhe help of Michael VO, for SEVRI. We use a Raspberry Pie, with AdaFruit to link the raspberry to a LED Display.
 
@@ -19,6 +20,12 @@ We created the file code_leds.cpp and the images corresponding to the smileys.
 
 To compile the project: 
 >make -C SEVRI_pgrm
+
+To clean (it will run clean for the submodule, and for our project):
+>make clean
+
+
+
 
 
 
