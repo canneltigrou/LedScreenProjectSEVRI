@@ -1,10 +1,10 @@
 // This code is public domain
 // (but note, that the led-matrix library this depends on is GPL v2)
 
-#include "led-matrix.h"
-#include "threaded-canvas-manipulator.h"
-#include "pixel-mapper.h"
-#include "graphics.h"
+#include "../submodule_rpi-rgb-led-matrix/include/led-matrix.h"
+#include "../submodule_rpi-rgb-led-matrix/include/threaded-canvas-manipulator.h"
+#include "../submodule_rpi-rgb-led-matrix/include/pixel-mapper.h"
+#include "../submodule_rpi-rgb-led-matrix/include/graphics.h"
 
 
 #include <unistd.h>
@@ -298,6 +298,38 @@ void InsertState(int s)
 		history.pop_back();
 }
 
+static int usage(const char *progname) {
+  fprintf(stderr, "usage: %s <options> -D <demo-nr> [optional parameter]\n",
+          progname);
+  fprintf(stderr, "Options:\n");
+  fprintf(stderr,
+          "\t-D <demo-nr>              : Always needs to be set\n"
+          "\t-t <seconds>              : Run for these number of seconds, then exit.\n");
+
+
+  rgb_matrix::PrintMatrixFlags(stderr);
+
+  fprintf(stderr, "Demos, choosen with -D\n");
+  fprintf(stderr, "\t0  - some rotating square\n"
+          "\t1  - forward scrolling an image (-m <scroll-ms>)\n"
+          "\t2  - backward scrolling an image (-m <scroll-ms>)\n"
+          "\t3  - test image: a square\n"
+          "\t4  - Pulsing color\n"
+          "\t5  - Grayscale Block\n"
+          "\t6  - Abelian sandpile model (-m <time-step-ms>)\n"
+          "\t7  - Conway's game of life (-m <time-step-ms>)\n"
+          "\t8  - Langton's ant (-m <time-step-ms>)\n"
+          "\t9  - Volume bars (-m <time-step-ms>)\n"
+          "\t10 - Evolution of color (-m <time-step-ms>)\n"
+          "\t11 - Brightness pulse generator\n");
+  fprintf(stderr, "Example:\n\t%s -t 10 -D 1 runtext.ppm\n"
+          "Scrolls the runtext for 10 seconds\n", progname);
+  return 1;
+}
+
+
+
+
 
 int main(int argc, char *argv[]) {
 
@@ -370,12 +402,12 @@ int main(int argc, char *argv[]) {
 		sleep(runtime_seconds);
 	}
 	else {
-		printf("Je lis le fichier\n");
+		printf("I am reading the file\n");
 		while (!interrupt_received) {
 			ifstream input("test.bin", ios::ate);
 			if (!input.is_open())
 			{
-				printf("FICHIER INEXISTANT\n");
+				printf("THE FILE DOESN'T EXIST\n");
 				sleep(5);
 				continue;
 			}
