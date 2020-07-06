@@ -1,6 +1,6 @@
 # LedScreenProjectSEVRI
 *a project with SEVRI, to diplay smileys on a LED display.*
-** PLEASE, BE AWARE THAT THIS REPO IS IN PROGRESS. It doesn't work yet. Thanks **
+**PLEASE, BE AWARE THAT THIS REPO IS IN PROGRESS. It doesn't work yet. Thanks**
 
 The project was in majority made withe an huhe help of Michael VO, for SEVRI. We use a Raspberry Pie, with AdaFruit to link the raspberry to a LED Display.
 
