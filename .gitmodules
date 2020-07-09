@@ -1,3 +1,6 @@
 [submodule "submodule_rpi-rgb-led-matrix"]
 	path = submodule_rpi-rgb-led-matrix
 	url = https://github.com/hzeller/rpi-rgb-led-matrix.git
+[submodule "ABElectronics_CPP_Libraries"]
+	path = ABElectronics_CPP_Libraries
+	url = https://github.com/abelectronicsuk/ABElectronics_CPP_Libraries.git
