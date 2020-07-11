@@ -18,11 +18,31 @@ We created the file code_leds.cpp and the images corresponding to the smileys.
 
 ## To run the program
 
+You can download the program from a terminal with the command line bellow (it will create the repository in your current path):
+>git clone https://github.com/canneltigrou/LedScreenProjectSEVRI.git
+>cd LedScreenProjectSEVRI
+
 To compile the project: 
 >make -C SEVRI_pgrm
 
 To clean (it will run clean for the submodule, and for our project):
 >make clean
+
+lets create our script.sh in the root of the raspberry, with the right path.
+Please verify that you don't have any important file named script.sh in your root (since it will be replaced if you have some)
+Please verify your terminal is in your folder LedScreenProjectSEVRI, then run these command lines into your terminal
+>echo '#!/bin/bash' > ~/script.sh
+  
+>echo sudo $(pwd)'/SEVRI_pgrm/code_leds --led-chain=2 -D 1 --led-rows=32 --led-cols=128 --led-brightness=50 --led-no-hardware-pulse --led-gpio-mapping=adafruit-hat --led-slowdown-gpio=4 --led-daemon /home/pi/LedScreenProjectSEVRI/SEVRI_pgrm/smile.ppm' >> ~/test.sh
+  
+>echo sudo $(pwd)'/SEVRI_pgrm/test_input > /dev/null' >> ~/test.sh
+  
+Lets give all the permissions to the script:
+>chmod 777 ~/script.sh 
+
+
+You can run the script:
+>~/script.sh
 
 
 
