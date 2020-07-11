@@ -5,6 +5,7 @@
 #include "../submodule_rpi-rgb-led-matrix/include/threaded-canvas-manipulator.h"
 #include "../submodule_rpi-rgb-led-matrix/include/pixel-mapper.h"
 #include "../submodule_rpi-rgb-led-matrix/include/graphics.h"
+#include "ABE_IoPi.h"
 
 
 #include <unistd.h>
@@ -290,6 +291,27 @@ uint16_t bitArrayToInt32(bool arr[], int count)
 	return ret;
 }
 
+ABElectronics_CPP_Libraries::IoPi initializeDigitalCard(void)
+{
+	try
+	{
+		ABElectronics_CPP_Libraries::IoPi bus1(0x20);
+		printf("TEST\n");
+		bus1.set_port_direction(0, 0xFF); // set bank 0 to be inputs
+		bus1.set_port_direction(1, 0xFF); // set bank 1 to be inputs
+		bus1.set_port_pullups(0, 0xFF);   // enable internal pullups for bank 0
+		bus1.invert_port(0, 0xFF);		  // invert output so bank will read as 0
+		bus1.set_port_pullups(1, 0xFF);   // enable internal pullups for bank 0
+		bus1.invert_port(1, 0xFF);		  // invert output so bank will read as 0
+		printf("TEST_FIN\n");
+		return bus1;
+	}
+	catch (exception &e)
+	{
+		cout << e.what();
+	}
+}
+
 
 void InsertState(int s)
 {
@@ -297,6 +319,96 @@ void InsertState(int s)
 	if (history.size() > 8)
 		history.pop_back();
 }
+
+class ImageDrawingThread : public ThreadedCanvasManipulator {
+public:
+	// Scroll image with "scroll_jumps" pixels every "scroll_ms" milliseconds.
+	// If "scroll_ms" is negative, don't do any scrolling.
+	ImageDrawingThread(RGBMatrix *m)
+		: ThreadedCanvasManipulator(m),
+		matrix_(m) {
+		offscreen_ = matrix_->CreateFrameCanvas();
+	}
+
+	virtual ~ImageDrawingThread() {
+		Stop();
+		WaitStopped();   // only now it is safe to delete our instance variables.
+	}
+
+
+  void Run() {
+    printf("DEBUT RUN\n");
+    const int screen_height = offscreen_->height();
+    const int screen_width = offscreen_->width();
+    while (running() && !interrupt_received) {
+      /*{
+        if (new_image_.IsValid()) {
+          current_image_.Delete();
+          current_image_ = new_image_;
+          new_image_.Reset();
+        }
+      }
+      if (!current_image_.IsValid()) {
+      }*/
+      offscreen_->Clear();
+      //offscreen_ = matrix_->CreateFrameCanvas();
+      usleep(100 * 1000);
+      printDigitAreas(offscreen_, areas, value);
+	  if (!history.empty())
+	  {
+		  int index_area;
+		  std::list<int>::iterator it;
+		  for (it = history.begin(), index_area = 3; it != history.end(); ++it, ++index_area)
+		  {
+			  switch(*it)
+			  {
+				  case 0:
+					  printSmileyAreas(offscreen_, areas, image_happy, index_area);
+					  break;
+				  case 1:
+					  printSmileyAreas(offscreen_, areas, image_sceptic, index_area);
+					  break;
+				  case 2:
+					  printSmileyAreas(offscreen_, areas, image_unhappy, index_area);
+					  break;
+				  default:
+					  break;
+			  }
+		  }
+		  usleep(100 * 1000);
+	  }
+	  
+      /*for (int x = 0; x < screen_width; ++x) {
+        for (int y = 0; y < screen_height; ++y) {
+          const Pixel &p = image_happy.getPixel(
+            (horizontal_position_ + x) % image_happy.width, y);
+          offscreen_->SetPixel(x, y, p.red, p.green, p.blue);
+        }
+      }*/
+      offscreen_ = matrix_->SwapOnVSync(offscreen_);
+      
+    }
+  }
+
+private:
+
+  int32_t horizontal_position_;
+
+  RGBMatrix* matrix_;
+  FrameCanvas* offscreen_;
+  ABElectronics_CPP_Libraries::IoPi *bus1_;
+
+  // Images manipulated in our thread.
+  Image image_happy = readPPM("happy.ppm");
+  Image image_sceptic = readPPM("sceptic.ppm");
+  Image image_unhappy = readPPM("unhappy.ppm");
+
+  // Analog signal read
+  // uint16_t value;
+
+  // history of smileys
+};
+
 
 static int usage(const char *progname) {
   fprintf(stderr, "usage: %s <options> -D <demo-nr> [optional parameter]\n",

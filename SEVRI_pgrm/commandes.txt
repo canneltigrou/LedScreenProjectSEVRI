@@ -1,0 +1,10 @@
+MANUEL D'UTILISATION
+A partir du terminal de départ:
+1) cd /home/pi/rpi-rgb-led-matrix-v2/examples-api-use
+2) make && sudo ./demo --led-chain=2 -D 1 --led-rows=32 --led-cols=128 --led-brightness=50 --led-no-hardware-pulse --led-gpio-mapping=adafruit-hat --led-slowdown-gpio=4 smile2.ppm
+
+
+En parallèle sur un autre terminal:
+1) cd /home/pi/rpi-rgb-led-matrix-v2/examples-api-use
+2) g++ ABE_IoPi.cc demo-iopiread.cpp -o test_input
+3) ./test_input
