@@ -33,16 +33,16 @@ Please verify that you don't have any important file named script.sh in your roo
 Please verify your terminal is in your folder LedScreenProjectSEVRI, then run these command lines into your terminal
 >echo '#!/bin/bash' > ~/script.sh
   
->echo sudo $(pwd)'/SEVRI_pgrm/code_leds --led-chain=2 -D 1 --led-rows=32 --led-cols=128 --led-brightness=50 --led-no-hardware-pulse --led-gpio-mapping=adafruit-hat --led-slowdown-gpio=4 --led-daemon /home/pi/LedScreenProjectSEVRI/SEVRI_pgrm/smile.ppm' >> ~/test.sh
+>echo sudo $(pwd)'/SEVRI_pgrm/code_leds --led-chain=2 -D 1 --led-rows=32 --led-cols=128 --led-brightness=50 --led-no-hardware-pulse --led-gpio-mapping=adafruit-hat --led-slowdown-gpio=4 --led-daemon /home/pi/LedScreenProjectSEVRI/SEVRI_pgrm/smile.ppm' >> ~/script.sh
   
->echo sudo $(pwd)'/SEVRI_pgrm/test_input > /dev/null' >> ~/test.sh
+>echo sudo $(pwd)'/SEVRI_pgrm/test_input > /dev/null' >> ~/script.sh
   
 Lets give all the permissions to the script:
 >chmod 777 ~/script.sh 
 
 
 You can run the script:
->~/script.sh
+>bash ~/script.sh
 
 
 
