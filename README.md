@@ -20,6 +20,7 @@ We created the file code_leds.cpp and the images corresponding to the smileys.
 
 You can download the program from a terminal with the command line bellow (it will create the repository in your current path):
 >git clone https://github.com/canneltigrou/LedScreenProjectSEVRI.git
+  
 >cd LedScreenProjectSEVRI
 
 To compile the project: 
