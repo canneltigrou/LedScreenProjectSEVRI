@@ -18,14 +18,13 @@ Required package:
 
 
 
-## To run the program
+## To build the program
 
 To compile the project: 
 >make -C SEVRI_pgrm
 
 To clean (it will run clean for the submodule, and for our project):
 >make clean
-
 
 
 
