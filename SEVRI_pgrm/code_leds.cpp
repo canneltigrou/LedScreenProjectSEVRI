@@ -165,7 +165,7 @@ struct Area
 	int index_c;
 };
 
-Area areas[11];
+Area areas[11]; // The first 3 areas are for the digits to display the frequency. The area[3:10] correspond to the history stack with the smileys
 
 struct Pixel {
 	Pixel() : red(0), green(0), blue(0) {}
@@ -286,6 +286,7 @@ void displayBonjour(FrameCanvas * canvas, Area(&areas)[11])
 	usleep(100 * 1000 * 5);	
 }
 
+// print the frequency so the 3 digits on the Areas[0:2]
 void printDigitAreas(FrameCanvas * canvas, Area(&areas)[11], int number)
 {
 	int hundreds = (number / 100) % 10;
@@ -305,7 +306,7 @@ void printDigitAreas(FrameCanvas * canvas, Area(&areas)[11], int number)
 	}
 }
 
-
+// used to convert the bit array read on the file to a number to display (for the frequency).
 uint16_t bitArrayToInt32(bool arr[], int count)
 {
 	uint16_t ret = 0;
@@ -338,7 +339,7 @@ ABElectronics_CPP_Libraries::IoPi initializeDigitalCard(void)
 	}
 }
 
-
+// Insert a new state (0,1,2 corresponding to smileys) into the history stack
 void InsertState(int s)
 {
 	history.push_front(s);
@@ -346,7 +347,7 @@ void InsertState(int s)
 		history.pop_back();
 }
 
-
+// thread running in parallel, used to display on the panel
 class ImageDrawingThread : public ThreadedCanvasManipulator {
 public:
 	// Scroll image with "scroll_jumps" pixels every "scroll_ms" milliseconds.
@@ -419,8 +420,6 @@ private:
   Image image_sceptic = readPPM("sceptic.ppm");
   Image image_unhappy = readPPM("unhappy.ppm");
 
-  // Analog signal read
-  // uint16_t value;
 
 };
 
