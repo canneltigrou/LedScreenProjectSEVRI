@@ -174,6 +174,7 @@ struct Pixel {
 	uint8_t blue;
 };
 
+
 struct Image {
 	Image() : width(-1), height(-1), image(NULL) {}
 	Image(int w, int h, Pixel *im) { width = w; height = h; image = im; }
@@ -192,38 +193,6 @@ struct Image {
 	Pixel *image;
 };
 
-
-void printSmileyAreas(FrameCanvas *canvas, Area(&areas)[11], Image &im, int state)
-{
-	for (int row = 0; row < im.height; ++row)
-	{
-		for (int col = 0; col < im.width; ++col)
-		{
-			const Pixel &p = im.getPixel(col, row);
-			canvas->SetPixel(areas[state].index_c + col, areas[state].index_r + row, p.red, p.green, p.blue);
-		}
-	}
-}
-
-void printDigitAreas(FrameCanvas * canvas, Area(&areas)[11], int number)
-{
-	int hundreds = (number / 100) % 10;
-	int tens = (number / 10) % 10;
-	int units = number % 10;
-	for (int col = 0; col < 7; ++col)
-	{
-		for (int row = 0; row < 10; ++row)
-		{
-			if (digit[hundreds][row][col])
-				canvas->SetPixel(col + areas[0].index_c, row + areas[0].index_r, 255, 255, 255);
-			if (digit[tens][row][col])
-				canvas->SetPixel(col + areas[1].index_c, row + areas[1].index_r, 255, 255, 255);
-			if (digit[units][row][col])
-				canvas->SetPixel(col + areas[2].index_c, row + areas[2].index_r, 255, 255, 255);
-		}
-	}
-}
-
 // Read line, skip comments.
 char *ReadLine(FILE *f, char *buffer, size_t len) {
 	char *result;
@@ -232,6 +201,7 @@ char *ReadLine(FILE *f, char *buffer, size_t len) {
 	} while (result != NULL && result[0] == '#');
 	return result;
 }
+
 
 Image readPPM(const char *filename) {
 	FILE *f = fopen(filename, "r");
@@ -268,15 +238,71 @@ Image readPPM(const char *filename) {
 		new_width, new_height);
 	Image res(new_width, new_height, new_image);
 	return res;
-	/*
-	horizontal_position_ = 0;
-	MutexLock l(&mutex_new_image_);
-	new_image_.Delete();  // in case we reload faster than is picked up
-	new_image_.image = new_image;
-	new_image_.width = new_width;
-	new_image_.height = new_height;
-	return true;
-	*/
+}
+
+
+
+// it is used to insert an area loading the image just for this function. For example to display 'bonjour' to the sreen, we will not use the image another time.
+void printAreasFromFile(FrameCanvas *canvas, Area(&areas)[11], const char* filename, int state)
+{
+	std::cout << "I will read the ppm file" << std::endl;
+	Image im = readPPM(filename);
+	for (int row = 0; row < im.height; ++row)
+	{
+		for (int col = 0; col < im.width; ++col)
+		{
+			const Pixel &p = im.getPixel(col, row);
+			canvas->SetPixel(areas[state].index_c + col, areas[state].index_r + row, p.red, p.green, p.blue);
+		}
+	}
+
+}
+
+// print the corresponding smiley (corresponding to im). The image is already downloaded from a file. (image_bad, image_middle and image_happy smiley images)
+void printSmileyAreas(FrameCanvas *canvas, Area(&areas)[11], Image &im, int state)
+{
+	for (int row = 0; row < im.height; ++row)
+	{
+		for (int col = 0; col < im.width; ++col)
+		{
+			const Pixel &p = im.getPixel(col, row);
+			canvas->SetPixel(areas[state].index_c + col, areas[state].index_r + row, p.red, p.green, p.blue);
+		}
+	}
+}
+
+// not used because it doesn't work yet.
+void displayBonjour(FrameCanvas * canvas, Area(&areas)[11])
+{
+	// let's say "bonjour"
+	printAreasFromFile(canvas, areas, "letters_area/letter_b.ppm",3);
+	printAreasFromFile(canvas, areas, "letters_area/letter_o.ppm",4);
+	printAreasFromFile(canvas, areas, "letters_area/letter_n.ppm",5);
+	printAreasFromFile(canvas, areas, "letters_area/letter_j.ppm", 6);
+	printAreasFromFile(canvas, areas, "letters_area/letter_o.ppm",7);
+	printAreasFromFile(canvas, areas, "letters_area/letter_u.ppm",8);
+	printAreasFromFile(canvas, areas, "letters_area/letter_r.ppm",9);
+	printAreasFromFile(canvas, areas, "happy.ppm", 10);
+	usleep(100 * 1000 * 5);	
+}
+
+void printDigitAreas(FrameCanvas * canvas, Area(&areas)[11], int number)
+{
+	int hundreds = (number / 100) % 10;
+	int tens = (number / 10) % 10;
+	int units = number % 10;
+	for (int col = 0; col < 7; ++col)
+	{
+		for (int row = 0; row < 10; ++row)
+		{
+			if (digit[hundreds][row][col])
+				canvas->SetPixel(col + areas[0].index_c, row + areas[0].index_r, 255, 255, 255);
+			if (digit[tens][row][col])
+				canvas->SetPixel(col + areas[1].index_c, row + areas[1].index_r, 255, 255, 255);
+			if (digit[units][row][col])
+				canvas->SetPixel(col + areas[2].index_c, row + areas[2].index_r, 255, 255, 255);
+		}
+	}
 }
 
 
@@ -320,75 +346,65 @@ void InsertState(int s)
 		history.pop_back();
 }
 
+
 class ImageDrawingThread : public ThreadedCanvasManipulator {
 public:
 	// Scroll image with "scroll_jumps" pixels every "scroll_ms" milliseconds.
 	// If "scroll_ms" is negative, don't do any scrolling.
 	ImageDrawingThread(RGBMatrix *m)
 		: ThreadedCanvasManipulator(m),
-		matrix_(m) {
+		matrix_(m) 
+	{
 		offscreen_ = matrix_->CreateFrameCanvas();
 	}
 
-	virtual ~ImageDrawingThread() {
+	virtual ~ImageDrawingThread() 
+	{
 		Stop();
 		WaitStopped();   // only now it is safe to delete our instance variables.
 	}
 
-
-  void Run() {
-    printf("RUNING\n");
-    const int screen_height = offscreen_->height();
-    const int screen_width = offscreen_->width();
-    while (running() && !interrupt_received) {
-      /*{
-        if (new_image_.IsValid()) {
-          current_image_.Delete();
-          current_image_ = new_image_;
-          new_image_.Reset();
-        }
-      }
-      if (!current_image_.IsValid()) {
-      }*/
-      offscreen_->Clear();
-      //offscreen_ = matrix_->CreateFrameCanvas();
-      usleep(100 * 1000);
-      printDigitAreas(offscreen_, areas, value);
-	  if (!history.empty())
-	  {
-		  int index_area;
-		  std::list<int>::iterator it;
-		  for (it = history.begin(), index_area = 3; it != history.end(); ++it, ++index_area)
-		  {
-			  switch(*it)
-			  {
-				  case 0:
-					  printSmileyAreas(offscreen_, areas, image_happy, index_area);
-					  break;
-				  case 1:
-					  printSmileyAreas(offscreen_, areas, image_sceptic, index_area);
-					  break;
-				  case 2:
-					  printSmileyAreas(offscreen_, areas, image_unhappy, index_area);
-					  break;
-				  default:
-					  break;
-			  }
-		  }
-		  usleep(100 * 1000);
-	  }
-	  
-      /*for (int x = 0; x < screen_width; ++x) {
-        for (int y = 0; y < screen_height; ++y) {
-          const Pixel &p = image_happy.getPixel(
-            (horizontal_position_ + x) % image_happy.width, y);
-          offscreen_->SetPixel(x, y, p.red, p.green, p.blue);
-        }
-      }*/
-      offscreen_ = matrix_->SwapOnVSync(offscreen_);
-      
-    }
-  }
+	// It reads the stack history and display the corresponding smileys and frequency
+	void Run() 
+	{
+		printf("RUNING\n");
+		const int screen_height = offscreen_->height();
+		const int screen_width = offscreen_->width();
+		
+		//displayBonjour(offscreen_ , areas);
+		while (running() && !interrupt_received) 
+		{
+		    offscreen_->Clear();
+		    //offscreen_ = matrix_->CreateFrameCanvas();
+		    usleep(100 * 1000);
+		    printDigitAreas(offscreen_, areas, value);
+		    if (!history.empty())
+		    {
+		        int index_area;
+		        std::list<int>::iterator it;
+		        for (it = history.begin(), index_area = 3; it != history.end(); ++it, ++index_area)
+		        {
+		            switch(*it)
+		            {
+		                case 0:
+		                    printSmileyAreas(offscreen_, areas, image_happy, index_area);
+		                    break;
+		                case 1:
+							printSmileyAreas(offscreen_, areas, image_sceptic, index_area);
+		                    break;
+		                case 2:
+		                    printSmileyAreas(offscreen_, areas, image_unhappy, index_area);
+		                    break;
+		                default:
+		                    break;
+		            }
+		        }
+		        usleep(100 * 1000);
+			}
+			    
+			offscreen_ = matrix_->SwapOnVSync(offscreen_);
+		} // end of the while loop
+	} // end of run()
 
 private:
 
@@ -406,7 +422,6 @@ private:
   // Analog signal read
   // uint16_t value;
 
-  // history of smileys
 };
 
 
@@ -440,7 +455,60 @@ static int usage(const char *progname) {
 }
 
 
+// read into the test.bin file (filled by the program in parallel : test_input) where the current states are logged.
+// then it push the new state into the history stack.
+void read_states()
+{
+	uint16_t last_iter = 1;
+	printf("I am reading the file\n");
+	while (!interrupt_received) 
+	{
+		ifstream input("test.bin", ios::ate);
+		if (!input.is_open())
+		{
+			printf("THE FILE DOESN'T EXIST\n");
+			sleep(5);
+			continue;
+		}
+		else
+		{
+			if (input.tellg() == sizeof(bool) * (4 + 10))
+			{
+				printf("GOOD SIZE\n");
+				input.clear();
+				input.seekg(0, ios::beg);
+				bool res_smiley[4];
+				bool res_value[10];
+				char tmp;
+				for (int i = 0; i < 4; ++i)
+				{
+					input.get(tmp);
+					res_smiley[i] = (bool)(tmp - 48);
+					printf("%d\n", res_smiley[i]);
+				}
+				for (int i = 0; i < 10; ++i)
+				{
+					input.get(tmp);
+					res_value[i] = (bool)(tmp - 48);
+				}
+				input.close();
+					value = bitArrayToInt32(res_value, 10);
+				if (last_iter != res_smiley[3])
+				{
+					last_iter = res_smiley[3];
+					if (res_smiley[0])
+						InsertState(0);
+					else if (res_smiley[1])
+						InsertState(1);
+					else if (res_smiley[2])
+						InsertState(2);
+				}
+			}
+			sleep(5); // Time doesn't really matter. The syscall will be interrupted.
+		}
 
+	}
+}
 
 
 int main(int argc, char *argv[]) {
@@ -465,7 +533,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	RGBMatrix::Options matrix_options;
-	uint16_t last_iter = 1;
+
 	rgb_matrix::RuntimeOptions runtime_opt;
 
 	//  . / demo --led - chain = 2 - D 1 --led - rows = 32 --led - cols = 128 --led - brightness = 50 --led - no - hardware - pulse --led - gpio - mapping = adafruit - hat --led - slowdown - gpio = 4 smile2.ppm
@@ -503,11 +571,12 @@ int main(int argc, char *argv[]) {
 	signal(SIGTERM, InterruptHandler);
 	signal(SIGINT, InterruptHandler);
 
-	ImageDrawingThread *imt = new ImageDrawingThread(matrix);
+	ImageDrawingThread *imt = new ImageDrawingThread(matrix);		
+
 	image_gen = imt;
 
 	if (image_gen == NULL)
-    return usage(argv[0]);
+		return usage(argv[0]);
 
 	// Image generating demo is created. Now start the thread.
 	image_gen->Start();
@@ -519,53 +588,7 @@ int main(int argc, char *argv[]) {
 		sleep(runtime_seconds);
 	}
 	else {
-		printf("I am reading the file\n");
-		while (!interrupt_received) {
-			ifstream input("test.bin", ios::ate);
-			if (!input.is_open())
-			{
-				printf("THE FILE DOESN'T EXIST\n");
-				sleep(5);
-				continue;
-			}
-			else
-			{
-				if (input.tellg() == sizeof(bool) * (4 + 10))
-				{
-					printf("GOOD SIZE\n");
-					input.clear();
-					input.seekg(0, ios::beg);
-					bool res_smiley[4];
-					bool res_value[10];
-					char tmp;
-					for (int i = 0; i < 4; ++i)
-					{
-						input.get(tmp);
-						res_smiley[i] = (bool)(tmp - 48);
-						printf("%d\n", res_smiley[i]);
-					}
-					for (int i = 0; i < 10; ++i)
-					{
-						input.get(tmp);
-						res_value[i] = (bool)(tmp - 48);
-					}
-					input.close();
-
-					value = bitArrayToInt32(res_value, 10);
-					if (last_iter != res_smiley[3])
-					{
-						last_iter = res_smiley[3];
-						if (res_smiley[0])
-							InsertState(0);
-						else if (res_smiley[1])
-							InsertState(1);
-						else if (res_smiley[2])
-							InsertState(2);
-					}
-				}
-				sleep(5); // Time doesn't really matter. The syscall will be interrupted.
-			}
-		}
+		read_states();
 	}
 
 	// Stop image generating thread. The delete triggers
