@@ -472,7 +472,7 @@ int main(int argc, char *argv[]) {
 	matrix_options.rows = 32;
 	matrix_options.chain_length = 2;
 	matrix_options.parallel = 1;
-	matrix_options.cols = 64;
+	matrix_options.cols = 128;
 	matrix_options.brightness = 50;
 	matrix_options.hardware_mapping = "adafruit-hat";
 	matrix_options.disable_hardware_pulsing = true;
