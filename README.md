@@ -61,6 +61,14 @@ You can run the script from your home:
 >./script.sh
 
 
+## kill the program
+You can kill the program test_input (which read the inputs from the automaton) just by ctrl-C  
+However the second program that displays the smileys is launch in parallel. You can find its pid by the command  
+>ps aux | grep 'code_led'  
+
+then you can kill it with its pid  
+>sudo kill its_pid
+
 
 
 
