@@ -26,7 +26,9 @@
 using namespace rgb_matrix;
 using namespace std;
 
+// value corrseponds to the value of the frequency to display
 uint16_t value = 42;
+// history contains the 8 last states (corresponding to the displayed smileys)
 std::list<int> history;
 
 volatile bool interrupt_received = false;
@@ -34,10 +36,10 @@ static void InterruptHandler(int signo) {
 	interrupt_received = true;
 }
 
-
+// 10 * 7 booleans to represent each digit, used to display the frequency
 int digit[10][10][7] =
 {
-	{
+	{ //0
 		{ 0, 0, 1, 1, 1, 0, 0 },
 		{ 0, 1, 1, 0, 1, 1, 0 },
 		{ 1, 1, 0, 0, 0, 1, 1 },
@@ -49,7 +51,7 @@ int digit[10][10][7] =
 		{ 0, 1, 1, 0, 1, 1, 0 },
 		{ 0, 0, 1, 1, 1, 0, 0 }
 	},
-	{
+	{ //1
 		{ 0, 0, 0, 1, 1, 0, 0 },
 		{ 0, 0, 1, 1, 1, 0, 0 },
 		{ 0, 1, 1, 1, 1, 0, 0 },
@@ -61,7 +63,7 @@ int digit[10][10][7] =
 		{ 0, 0, 0, 1, 1, 0, 0 },
 		{ 0, 1, 1, 1, 1, 1, 1 }
 	},
-	{
+	{ // 2
 		{ 0, 1, 1, 1, 1, 1, 0 },
 		{ 1, 1, 0, 0, 0, 1, 1 },
 		{ 1, 1, 0, 0, 0, 1, 1 },
@@ -73,7 +75,7 @@ int digit[10][10][7] =
 		{ 1, 1, 0, 0, 0, 0, 0 },
 		{ 1, 1, 1, 1, 1, 1, 1 }
 	},
-	{
+	{  //3
 		{ 1, 1, 1, 1, 1, 1, 1 },
 		{ 0, 0, 0, 0, 0, 1, 1 },
 		{ 0, 0, 0, 0, 1, 1, 0 },
@@ -85,7 +87,7 @@ int digit[10][10][7] =
 		{ 1, 1, 0, 0, 0, 1, 1 },
 		{ 0, 1, 1, 1, 1, 1, 0 }
 	},
-	{
+	{  //4
 		{ 0, 0, 0, 0, 1, 1, 0 },
 		{ 0, 0, 0, 1, 1, 1, 0 },
 		{ 0, 0, 1, 1, 1, 1, 0 },
@@ -97,7 +99,7 @@ int digit[10][10][7] =
 		{ 0, 0, 0, 0, 1, 1, 0 },
 		{ 0, 0, 0, 0, 1, 1, 0 }
 	},
-	{
+	{  //5
 		{ 1, 1, 1, 1, 1, 1, 1 },
 		{ 1, 1, 0, 0, 0, 0, 0 },
 		{ 1, 1, 0, 0, 0, 0, 0 },
@@ -109,7 +111,7 @@ int digit[10][10][7] =
 		{ 1, 1, 0, 0, 0, 1, 1 },
 		{ 0, 1, 1, 1, 1, 1, 0 }
 	},
-	{
+	{  //6
 		{ 0, 0, 1, 1, 1, 1, 0 },
 		{ 0, 1, 1, 0, 0, 0, 0 },
 		{ 1, 1, 0, 0, 0, 0, 0 },
@@ -121,7 +123,7 @@ int digit[10][10][7] =
 		{ 1, 1, 1, 0, 0, 1, 1 },
 		{ 0, 1, 1, 1, 1, 1, 0 }
 	},
-	{
+	{  //7
 		{ 1, 1, 1, 1, 1, 1, 1 },
 		{ 0, 0, 0, 0, 0, 1, 1 },
 		{ 0, 0, 0, 0, 0, 1, 1 },
@@ -133,7 +135,7 @@ int digit[10][10][7] =
 		{ 0, 0, 1, 1, 0, 0, 0 },
 		{ 0, 0, 1, 1, 0, 0, 0 }
 	},
-	{
+	{  //8
 		{ 0, 1, 1, 1, 1, 1, 0 },
 		{ 1, 1, 0, 0, 0, 1, 1 },
 		{ 1, 1, 0, 0, 0, 1, 1 },
@@ -145,7 +147,7 @@ int digit[10][10][7] =
 		{ 1, 1, 0, 0, 0, 1, 1 },
 		{ 0, 1, 1, 1, 1, 1, 0 }
 	},
-	{
+	{  //9
 		{ 0, 1, 1, 1, 1, 1, 0 },
 		{ 1, 1, 0, 0, 1, 1, 1 },
 		{ 1, 1, 0, 0, 0, 1, 1 },
@@ -165,7 +167,8 @@ struct Area
 	int index_c;
 };
 
-Area areas[11]; // The first 3 areas are for the digits to display the frequency. The area[3:10] correspond to the history stack with the smileys
+Area areas[11]; // The first 3 areas are for the digits to display the frequency.
+				// The area[3:10] correspond to the history stack with the smileys
 
 struct Pixel {
 	Pixel() : red(0), green(0), blue(0) {}
@@ -409,48 +412,48 @@ public:
 
 private:
 
-  int32_t horizontal_position_;
+	int32_t horizontal_position_;
 
-  RGBMatrix* matrix_;
-  FrameCanvas* offscreen_;
-  ABElectronics_CPP_Libraries::IoPi *bus1_;
+	RGBMatrix* matrix_;
+	FrameCanvas* offscreen_;
+	ABElectronics_CPP_Libraries::IoPi *bus1_;
 
-  // Images manipulated in our thread.
-  Image image_happy = readPPM("happy.ppm");
-  Image image_sceptic = readPPM("sceptic.ppm");
-  Image image_unhappy = readPPM("unhappy.ppm");
+	// Images manipulated in our thread.
+	Image image_happy = readPPM("happy.ppm");
+	Image image_sceptic = readPPM("sceptic.ppm");
+	Image image_unhappy = readPPM("unhappy.ppm");
 
 
 };
 
 
 static int usage(const char *progname) {
-  fprintf(stderr, "usage: %s <options> -D <demo-nr> [optional parameter]\n",
-          progname);
-  fprintf(stderr, "Options:\n");
-  fprintf(stderr,
-          "\t-D <demo-nr>              : Always needs to be set\n"
-          "\t-t <seconds>              : Run for these number of seconds, then exit.\n");
+	fprintf(stderr, "usage: %s <options> -D <demo-nr> [optional parameter]\n",
+			progname);
+	fprintf(stderr, "Options:\n");
+	fprintf(stderr,
+			"\t-D <demo-nr>              : Always needs to be set\n"
+			"\t-t <seconds>              : Run for these number of seconds, then exit.\n");
 
 
-  rgb_matrix::PrintMatrixFlags(stderr);
+	rgb_matrix::PrintMatrixFlags(stderr);
 
-  fprintf(stderr, "Demos, choosen with -D\n");
-  fprintf(stderr, "\t0  - some rotating square\n"
-          "\t1  - forward scrolling an image (-m <scroll-ms>)\n"
-          "\t2  - backward scrolling an image (-m <scroll-ms>)\n"
-          "\t3  - test image: a square\n"
-          "\t4  - Pulsing color\n"
-          "\t5  - Grayscale Block\n"
-          "\t6  - Abelian sandpile model (-m <time-step-ms>)\n"
-          "\t7  - Conway's game of life (-m <time-step-ms>)\n"
-          "\t8  - Langton's ant (-m <time-step-ms>)\n"
-          "\t9  - Volume bars (-m <time-step-ms>)\n"
-          "\t10 - Evolution of color (-m <time-step-ms>)\n"
-          "\t11 - Brightness pulse generator\n");
-  fprintf(stderr, "Example:\n\t%s -t 10 -D 1 runtext.ppm\n"
-          "Scrolls the runtext for 10 seconds\n", progname);
-  return 1;
+	fprintf(stderr, "Demos, choosen with -D\n");
+	fprintf(stderr, "\t0  - some rotating square\n"
+			"\t1  - forward scrolling an image (-m <scroll-ms>)\n"
+			"\t2  - backward scrolling an image (-m <scroll-ms>)\n"
+			"\t3  - test image: a square\n"
+			"\t4  - Pulsing color\n"
+			"\t5  - Grayscale Block\n"
+			"\t6  - Abelian sandpile model (-m <time-step-ms>)\n"
+			"\t7  - Conway's game of life (-m <time-step-ms>)\n"
+			"\t8  - Langton's ant (-m <time-step-ms>)\n"
+			"\t9  - Volume bars (-m <time-step-ms>)\n"
+			"\t10 - Evolution of color (-m <time-step-ms>)\n"
+			"\t11 - Brightness pulse generator\n");
+	fprintf(stderr, "Example:\n\t%s -t 10 -D 1 runtext.ppm\n"
+			"Scrolls the runtext for 10 seconds\n", progname);
+	return 1;
 }
 
 

@@ -46,7 +46,7 @@ Please verify your terminal is in your folder LedScreenProjectSEVRI, then run th
 
 
 
->echo ./code_leds --led-chain=2 -D 1 --led-rows=32 --led-cols=128 --led-brightness=50 --led-no-hardware-pulse --led-gpio-mapping=adafruit-hat --led-slowdown-gpio=4 --led-daemon './smile.ppm' >> script.sh
+>echo ./code_leds -D 1 --led-daemon >> script.sh
   
 >echo ./test_input > /dev/null' >> script.sh
 
@@ -67,7 +67,7 @@ However the second program that displays the smileys is launch in parallel. You 
 >ps aux | grep 'code_led'  
 
 then you can kill it with its pid  
->sudo kill its_pid
+>sudo kill *its_pid*
 
 
 
