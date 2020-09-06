@@ -22,6 +22,10 @@
 #include <cstdint>
 #include <exception>
 
+// To check the date and write a message in function
+#include <ctime>
+#include <iostream>
+
 
 using namespace rgb_matrix;
 using namespace std;
@@ -415,6 +419,30 @@ int DisplayText(std::string text_to_display, FrameCanvas* & canvas)
 
 
 
+std::string DecideStringToDisplay()
+{
+    std::string str = "bonjour !";
+    // We will check some dates and modify the text in funtion.
+    
+    std::time_t now = time(0);
+    std::tm *ts = localtime(&now);
+    //std::string date = to_string(ts->tm_year) + "/" + to_string(ts->tm_mon) + "/" + to_string(ts->tm_mday)
+    // if(date=="YYYY/MM/DD")
+    if(ts->tm_mon == 1 & ts->tm_mday < 16)
+    {
+        str = "Bonne année " + to_string(ts->tm_year) + " !";
+        return str;
+    }
+    if(ts->tm_mon == 12 & ts->tm_mday < 26 & ts-> tm_mday > 15)
+    {
+        str = "Joyeux Noël !";
+        return str;
+    }
+    return str;
+}
+
+
+
 
 
 
@@ -443,7 +471,7 @@ public:
         const int screen_height = offscreen_->height();
         const int screen_width = offscreen_->width();
         
-        DisplayText("Bonjour !", offscreen_);
+        DisplayText(DecideStringToDisplay(), offscreen_);
 
         while (running() && !interrupt_received) 
         {
