@@ -1,10 +1,10 @@
 # LedScreenProjectSEVRI
 *a project with SEVRI, to diplay smileys on a LED display.*  
 
-The project was in majority made withe an huge help of Michael VO, for SEVRI. We use a Raspberry Pie, with AdaFruit to link the raspberry to a LED Display.
+The project was in majority made with a huge help of Michael VO, for SEVRI. We use a Raspberry Pie, with AdaFruit to link the raspberry to a LED Display.
 
 ## The purpose
-The raspberry is link to an automaton that gives in real time how is the production (bad, middle, good). In the LED display, a corresponding smiley is displayed. There are 8 smileys displayed, corresponding to the 8 past informations. There is also a displayed number corresponding to the speed (communicated by the automaton too).
+The raspberry is linked to an automaton that gives in real time how is the production (bad, middle, good). In the LED display, a corresponding smiley is displayed. There are 8 smileys displayed, corresponding to the 8 past informations. There is also a displayed number corresponding to the speed (communicated by the automaton too).
 We used 4 RGB serial P5-LED panels with the Raspberry Pi.  
 <img src="https://github.com/canneltigrou/LedScreenProjectSEVRI/blob/master/SEVRI_pgrm/example/IMG_20200822_113504.jpg" width="500">
 
@@ -15,7 +15,7 @@ The LED-matrix library is (c) Henner Zeller h.zeller@acm.org, licensed with GNU 
 
 We created the file code_leds.cpp and the images corresponding to the smileys.
 
-We also used an [IO Pi](https://www.abelectronics.co.uk/kb/article/1042/io-pi "IO Pi") library to reads and writes to the ABElectrnics device that we used to communicate with the automaton.
+We also used an [IO Pi](https://www.abelectronics.co.uk/kb/article/1042/io-pi "IO Pi") library to reads and writes to the ABElectrnics device that we use to communicate with the automaton.
 
 
 ## To build the program
