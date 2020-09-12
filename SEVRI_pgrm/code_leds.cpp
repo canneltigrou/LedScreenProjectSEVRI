@@ -421,7 +421,7 @@ std::string DecideStringToDisplay()
     }
     if(month == 1 && day == 12)
     {
-        str = "JOYEUX ANNIVERSAIRE JONHATAN !";
+        str = "JOYEUX ANNIVERSAIRE GEOFFREY !";
         return str;
     }
     return str;
