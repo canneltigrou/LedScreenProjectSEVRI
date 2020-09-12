@@ -249,21 +249,6 @@ Image readPPM(const char *filename) {
 
 
 
-// it is used to insert an area loading the image just for this function. For example to display 'bonjour' to the sreen, we will not use the image another time.
-void printAreasFromFile(FrameCanvas *canvas, Area(&areas)[11], const char* filename, int state)
-{
-    std::cout << "I will read the ppm file" << std::endl;
-    Image im = readPPM(filename);
-    for (int row = 0; row < im.height; ++row)
-    {
-        for (int col = 0; col < im.width; ++col)
-        {
-            const Pixel &p = im.getPixel(col, row);
-            canvas->SetPixel(areas[state].index_c + col, areas[state].index_r + row, p.red, p.green, p.blue);
-        }
-    }
-
-}
 
 // print the corresponding smiley (corresponding to im). The image is already downloaded from a file. (image_bad, image_middle and image_happy smiley images)
 void printSmileyAreas(FrameCanvas *canvas, Area(&areas)[11], Image &im, int state)
@@ -278,20 +263,6 @@ void printSmileyAreas(FrameCanvas *canvas, Area(&areas)[11], Image &im, int stat
     }
 }
 
-// not used because it doesn't work yet.
-void displayBonjour(FrameCanvas * canvas, Area(&areas)[11])
-{
-    // let's say "bonjour"
-    printAreasFromFile(canvas, areas, "letters_area/letter_b.ppm",3);
-    printAreasFromFile(canvas, areas, "letters_area/letter_o.ppm",4);
-    printAreasFromFile(canvas, areas, "letters_area/letter_n.ppm",5);
-    printAreasFromFile(canvas, areas, "letters_area/letter_j.ppm", 6);
-    printAreasFromFile(canvas, areas, "letters_area/letter_o.ppm",7);
-    printAreasFromFile(canvas, areas, "letters_area/letter_u.ppm",8);
-    printAreasFromFile(canvas, areas, "letters_area/letter_r.ppm",9);
-    printAreasFromFile(canvas, areas, "happy.ppm", 10);
-    usleep(100 * 1000 * 5);	
-}
 
 // print the frequency so the 3 digits on the Areas[0:2]
 void printDigitAreas(FrameCanvas * canvas, Area(&areas)[11], int number)
@@ -438,14 +409,14 @@ std::string DecideStringToDisplay()
     std::string date = to_string(day) + "/" + to_string(month) + "/" + to_string(year);
     std::cout << "date : " << date << std::endl;
     // if(date=="YYYY/MM/DD")
-    if(month == 1 && day < 10)
+    if(month == 1 && day < 7)
     {
         str = "BONNE ANNEE " + to_string(year) + " !";
         return str;
     }
     if(month == 12 && day > 10)
     {
-        str = "JOYEUSES FETES !";
+        str = "JOYEUSES FETES DE FIN D'ANNEE !";
         return str;
     }
     if(month == 1 && day == 12)
