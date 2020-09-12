@@ -48,7 +48,7 @@ Please verify your terminal is in your folder LedScreenProjectSEVRI, then run th
 
 >echo ./code_leds -D 1 --led-daemon >> script.sh
   
->echo ./test_input > /dev/null' >> script.sh
+>echo './test_input > /dev/null' >> script.sh
 
 Lets give all the permissions to the script:
 >chmod 777 script.sh 
