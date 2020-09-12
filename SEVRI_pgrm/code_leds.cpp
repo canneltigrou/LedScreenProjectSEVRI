@@ -359,20 +359,24 @@ void InsertState(int s)
 
 // To display a text, for example at the begining of the program, 
 // To say "Hello", or give wishes
-int DisplayText(std::string text_to_display, FrameCanvas* & canvas)
+int DisplayText(std::string text_to_display, FrameCanvas*& canvas, RGBMatrix* matrix)
 {
     int cols = 128; // TODO initialised from the main
     int chain_length = 2;
     
-    const char *bdf_font_file = "7x13.bdf";
+    std::cout << "I am in displaytext()" << std::endl;
+    std::cout <<"text to display: "<< text_to_display.c_str() << std::endl;
+
+    
+    const char *bdf_font_file = "../submodule_rpi-rgb-led-matrix/fonts/10x20.bdf";
     /* x_origin is set by default just right of the screen */
     const int x_default_start = (chain_length * cols) + 5;
     int x_orig = x_default_start;
     int y_orig = 0;
     int letter_spacing = 1;
-    float speed = 7.0f;
+    float speed = 8.0f;
     int loops = 1; // I want to display the text 1 time.
-    int brightness = 100;
+    int brightness = 50;
 
     Color color(255, 255, 0);
     Color bg_color(0, 0, 0);
@@ -388,7 +392,7 @@ int DisplayText(std::string text_to_display, FrameCanvas* & canvas)
     }
 
     // Create a new canvas to be used with led_matrix_swap_on_vsync -> already done with canvas
-    //FrameCanvas *offscreen_canvas = matrix->CreateFrameCanvas(); // TO delete ?
+    FrameCanvas *offscreen_canvas = matrix->CreateFrameCanvas(); // TO delete ?
 
     int delay_speed_usec = 1000000 / speed / font.CharacterWidth('W');
 
@@ -398,22 +402,22 @@ int DisplayText(std::string text_to_display, FrameCanvas* & canvas)
 
 
     while (!interrupt_received && loops != 0) {
-        canvas->Fill(bg_color.r, bg_color.g, bg_color.b);
+        offscreen_canvas->Fill(bg_color.r, bg_color.g, bg_color.b);
         // length = holds how many pixels our text takes up
-        length = rgb_matrix::DrawText(canvas, font,
+        length = rgb_matrix::DrawText(offscreen_canvas, font,
                                     x, y + font.baseline(),
                                     color, nullptr,
                                     text_to_display.c_str(), letter_spacing);
-
         if (speed > 0 && --x + length < 0) {
-        x = x_orig;
-        if (loops > 0) --loops;
+            x = x_orig;
+            if (loops > 0) --loops;
         }
 
         // Swap the offscreen_canvas with canvas on vsync, avoids flickering
-        //offscreen_canvas = matrix->SwapOnVSync(offscreen_canvas);  // TO delete ?
+        offscreen_canvas = matrix->SwapOnVSync(offscreen_canvas);  // TO delete ?
         usleep(delay_speed_usec);
     }
+    std::cout << "I leave the function" << std::endl;
     return 0;
 }
 
@@ -421,21 +425,32 @@ int DisplayText(std::string text_to_display, FrameCanvas* & canvas)
 
 std::string DecideStringToDisplay()
 {
-    std::string str = "bonjour !";
+    std::string str = "BONJOUR ! Bon courage pour cette nouvelle production ! =D";
     // We will check some dates and modify the text in funtion.
     
     std::time_t now = time(0);
     std::tm *ts = localtime(&now);
-    //std::string date = to_string(ts->tm_year) + "/" + to_string(ts->tm_mon) + "/" + to_string(ts->tm_mday)
+    
+    int day = ts->tm_mday;
+    int month = ts->tm_mon + 1;
+    int year = ts->tm_year + 1900;
+    
+    std::string date = to_string(day) + "/" + to_string(month) + "/" + to_string(year);
+    std::cout << "date : " << date << std::endl;
     // if(date=="YYYY/MM/DD")
-    if(ts->tm_mon == 1 & ts->tm_mday < 16)
+    if(month == 1 && day < 10)
     {
-        str = "Bonne année " + to_string(ts->tm_year) + " !";
+        str = "BONNE ANNEE " + to_string(year) + " !";
         return str;
     }
-    if(ts->tm_mon == 12 & ts->tm_mday < 26 & ts-> tm_mday > 15)
+    if(month == 12 && day > 10)
     {
-        str = "Joyeux Noël !";
+        str = "JOYEUSES FETES !";
+        return str;
+    }
+    if(month == 1 && day == 12)
+    {
+        str = "JOYEUX ANNIVERSAIRE JONHATAN !";
         return str;
     }
     return str;
@@ -471,7 +486,7 @@ public:
         const int screen_height = offscreen_->height();
         const int screen_width = offscreen_->width();
         
-        DisplayText(DecideStringToDisplay(), offscreen_);
+        DisplayText(DecideStringToDisplay(), offscreen_, matrix_);
 
         while (running() && !interrupt_received) 
         {
