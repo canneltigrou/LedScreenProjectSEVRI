@@ -1,6 +1,5 @@
 # LedScreenProjectSEVRI
 *a project with SEVRI, to diplay smileys on a LED display.*
-**PLEASE, BE AWARE THAT THIS REPO IS IN PROGRESS. It doesn't work yet. Thanks**
 
 ## To display the smileys on the panels
 We have the files code_leds.cpp that uses the library ../rpi-rgb-led-matrix to work
